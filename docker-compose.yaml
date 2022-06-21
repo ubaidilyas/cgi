@@ -5,3 +5,4 @@ services:
     container_name: cgi-task
     ports:
      - 443:443
+     - 80:80
