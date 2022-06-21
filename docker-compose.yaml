@@ -1,0 +1,7 @@
+version: '3'
+services:
+  nginx_webserver:
+    image: cgi-task
+    container_name: cgi-task
+    ports:
+     - 443:443
