@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cgitask-depl
+  namespace: cgitask
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: ubaidilyas99/cgitask
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            cpu: 150m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cgitask-serv
+  namespace: cgitask
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80

@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cgitask-rule-ingress
+  namespace: cgitask
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - "automation-challenge.cgi.com"
+    secretName: cgitask-tls
+  rules:
+  - host: "automation-challenge.cgi.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cgitask-serv
+            port:
+              number: 8080

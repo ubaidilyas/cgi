@@ -1,0 +1,31 @@
+az group create --name cgiTaskRG --location westeurope --tags 'author=Ubaid' 'purpose=Challenge'
+
+az acr create --resource-group cgiTaskRG --name cgitaskacr --sku Basic --tags 'author=Ubaid' 'purpose=Challenge'
+
+az acr login --name cgitaskacr
+
+docker build -t cgi-task:h .
+
+docker tag cgi-task:latest cgitaskacr.azurecr.io/cgi-task:latest
+
+docker push cgitaskacr.azurecr.io/cgi-task:latest
+
+az aks create \
+    --resource-group cgiTaskRG \
+    --name cgiTaskAKSCluster \
+    --node-count 2
+
+az aks get-credentials --resource-group cgiTaskRG --name cgiTaskAKSCluster
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.2.1/deploy/static/provider/cloud/deploy.yaml
+
+kubectl create namespace cgitask
+
+kubectl apply -f kubernetes/cgitask.yml 
+kubectl apply -f kubernetes/cgitask-secret.yml 
+kubectl apply -f kubernetes/cgitask-ingress.yml 
+kubectl apply -f kubernetes/cgitask-pas.yml
+
+az acr repository list --name cgitaskacr
+kubectl scale --replicas=5 deployment/cgitask-depl -n cgitask
+kubectl get pods -n cgitask --watch
